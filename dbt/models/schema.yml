@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: main
+    tables:
+      - name: raw_listens
+
+models:
+  - name: listens
+    description: "Semantic layer over raw_listens with cleaned fields and timestamps."
+    columns:
+      - name: user_name
+        tests:
+          - not_null
+      - name: recording_msid
+        tests:
+          - not_null
+      - name: listened_at
+        tests:
+          - not_null
+      - name: artist_name
+        description: "NULL values from source are replaced with 'Unknown'."
+        tests:
+          - not_null
+      - name: track_name
+        description: "NULL values from source are replaced with 'Unknown'."
+        tests:
+          - not_null

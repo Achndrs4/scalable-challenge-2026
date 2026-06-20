@@ -1,0 +1,8 @@
+*.db
+__pycache__/
+*.pyc
+.python-version
+.venv/
+k8s/
+dbt/target/
+dbt/dbt_packages/

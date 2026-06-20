@@ -1,0 +1,14 @@
+name: 'scalable_challenge'
+version: '1.0.0'
+config-version: 2
+
+profile: 'scalable_challenge'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target"]
+
+models:
+  scalable_challenge:
+    +materialized: table
