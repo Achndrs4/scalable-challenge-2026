@@ -1,63 +1,16 @@
-# ListenBrainz Data Pipeline
+# Scalable Capital Challenge 2026
 
-## Requirements
+## Installation
+Instructions on installation can be found in SETUP.MD; This section involves an explination of design decisions and some differences between this simple test program and a productionalized setup.
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
-- Python 3.11 ([pyenv](https://github.com/pyenv/pyenv) recommended)
+## File Validation
+The first step of this pipeline is ingesting our jsonl file with records. We do this by splititng the read into different process pools and validating multiple lines simultanously, until we have a filtered outfile in terms of format (though not in terms of the actual data its meant to represent). This should be done here as the functionality of duckdb's schema inference can be unexpected with broken jsonls.
 
-## Setup
+## Ingestion into DB
+Now, we take this cleaned file and run some checks on each row of the cleaned file. THis includes trimming whitespace, normalizing empty strings, filtering duplicates in the ingestion file as well as filtering duplicates which already exist in the database. This makes our pipeline idempotent.
 
-**1. Clone the repo and enter the directory**
-```bash
-git clone <repo-url>
-cd scalable-challenge-2026
-```
+## Business Logic With DBT
+While the previous step gave us a valid raw database with all of the "transactions" we need, we cannot and should not be expected to query this table with complex business queries and it will result in backpressure for the ingestion pipeline. Therefore, we create a materialized table, which currently is ordered by listen date and user name to anticipate business use cases and optimize by having sequential memory blocks in the DB.
 
-**2. Add the dataset**
-
-Download `sample.jsonl` from the provided Google Drive link and place it at:
-```
-data/sample.jsonl
-```
-
-**3. (Optional) Generate a large test dataset**
-
-`data/generate.py` produces a 100k-record JSONL file with valid records, duplicates, and intentionally invalid records (null keys, bad timestamps) to verify the pipeline's idempotency and error handling at scale:
-
-```bash
-python data/generate.py
-# outputs data/large_sample.jsonl
-# 100,000 valid | 2,000 duplicates | 500 invalid
-```
-
-To run the pipeline against it instead of the real dataset:
-```bash
-DATA_PATH=data/large_sample.jsonl python pipeline.py
-```
-
-**4. Run with Docker (recommended)**
-```bash
-docker compose up --build
-```
-
-The Prefect UI is available at [localhost:4200](http://localhost:4200) once the server is healthy (~15 seconds). It's an optional way to view the DAG of the different steps of the data pipeline.
-
-**5. Run locally (without Docker)**
-```bash
-pyenv install 3.11.9
-pyenv local 3.11.9
-make install
-make pipeline   # run the ingestion pipeline
-make queries    # run the analysis queries
-```
-
-## All make commands
-
-| Command | Description |
-|---|---|
-| `make run` | Start full stack with Docker (includes Prefect UI) |
-| `make install` | Install Python dependencies locally |
-| `make pipeline` | Run ingestion pipeline locally |
-| `make queries` | Run analysis queries locally |
-| `make generate` | Generate 100k-record test dataset |
-| `make clean` | Remove `listens.db` and generated JSONL |
+## Data Tests
+To ensure that changes in our model don't break the expected downstream, we have defined some dbt tests that include null checks, as well as singular sql tests that check, for example, that we don't have duplicates and also that dbt itself doesn't drop anything between listens and raw_listens, for example.

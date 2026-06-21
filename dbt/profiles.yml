@@ -3,4 +3,4 @@ scalable_challenge:
   outputs:
     dev:
       type: duckdb
-      path: "{{ env_var('DB_PATH', 'listens.db') }}"
+      path: "{{ env_var('DB_PATH', 'data/listens.db') }}"

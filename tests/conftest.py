@@ -1,7 +1,7 @@
 import json
-import pytest
-import duckdb
 
+import duckdb
+import pytest
 
 VALID_RECORDS = [
     {

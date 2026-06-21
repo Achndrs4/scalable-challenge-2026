@@ -1,4 +1,5 @@
 import json
+
 from validate import _validate_chunk
 
 
@@ -12,14 +13,14 @@ def test_valid_lines_pass():
 def test_malformed_json_rejected():
     lines = ["not json", '{"broken":}', "   ", ""]
     valid, rejected = _validate_chunk(lines)
-    assert valid == []
+    assert not valid
     assert rejected == 4
 
 
 def test_json_array_rejected():
     lines = ["[1, 2, 3]", '["a", "b"]']
     valid, rejected = _validate_chunk(lines)
-    assert valid == []
+    assert not valid
     assert rejected == 2
 
 
@@ -39,8 +40,8 @@ def test_mixed_chunk():
 def test_validate_task_filters_mixed_file(mixed_jsonl):
     from validate import validate
     clean_path = validate.fn(mixed_jsonl)
-    with open(clean_path) as f:
-        lines = [l for l in f.readlines() if l.strip()]
+    with open(clean_path, encoding="utf-8") as f:
+        lines = [line for line in f.readlines() if line.strip()]
     assert len(lines) == 2
     for line in lines:
         assert isinstance(json.loads(line), dict)

@@ -1,0 +1,17 @@
+target-version = "py311"
+line-length = 100
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501", # line too long — SQL strings are exempt
+]
+
+[lint.per-file-ignores]
+"data/generate.py" = ["B"]  # generator script uses intentional broad patterns
+"tests/*" = ["B011"]        # assert False is fine in tests

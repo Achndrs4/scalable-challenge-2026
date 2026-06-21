@@ -1,5 +1,5 @@
 import json
-import pytest
+
 import duckdb
 from conftest import VALID_RECORDS
 

@@ -1,4 +1,5 @@
 import duckdb
+
 from db import connect
 
 

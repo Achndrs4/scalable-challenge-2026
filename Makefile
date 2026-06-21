@@ -1,4 +1,4 @@
-.PHONY: run venv install pipeline queries generate test dbt clean
+.PHONY: run venv install pipeline queries generate test lint dbt clean
 
 run:
 	docker compose up --build
@@ -21,9 +21,12 @@ generate:
 test:
 	.venv/bin/pytest tests/ -v
 
+lint:
+	.venv/bin/ruff check .
+
 dbt:
 	.venv/bin/dbt run --project-dir dbt --profiles-dir dbt
 	.venv/bin/dbt test --project-dir dbt --profiles-dir dbt
 
 clean:
-	rm -f listens.db data/large_sample.jsonl
+	rm -rf data/listens.db data/large_sample.jsonl dbt/target/ dbt/dbt_packages/ dbt/logs/ .pytest_cache/

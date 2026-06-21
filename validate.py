@@ -7,7 +7,6 @@ from db import DATA_PATH
 
 
 def _validate_chunk(lines: list) -> tuple:
-    """Parse each line in a chunk, return (valid_lines, rejected_count)."""
     valid = []
     rejected = 0
     for line in lines:
@@ -27,14 +26,9 @@ def _validate_chunk(lines: list) -> tuple:
 
 @task(name="Validate JSONL", retries=2, retry_delay_seconds=10)
 def validate(path: str = DATA_PATH) -> str:
-    """
-    Read JSONL file and filter malformed lines in parallel across CPU cores.
-    Returns the path to a clean temp file containing only valid JSON lines,
-    ready to be passed to the ingest step.
-    """
     workers = os.cpu_count() or 4
 
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         lines = f.readlines()
 
     chunk_size = max(1, len(lines) // workers)
@@ -46,7 +40,7 @@ def validate(path: str = DATA_PATH) -> str:
     valid_lines = [line for chunk_valid, _ in results for line in chunk_valid]
     total_rejected = sum(rejected for _, rejected in results)
 
-    tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False)
+    tmp = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", suffix=".jsonl", delete=False)
     tmp.writelines(f"{line}\n" for line in valid_lines)
     tmp.close()
 

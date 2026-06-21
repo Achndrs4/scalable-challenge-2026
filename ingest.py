@@ -1,5 +1,6 @@
 from prefect import task
-from db import connect, DATA_PATH
+
+from db import DATA_PATH, connect
 
 
 @task(name="Setup Schema", retries=2, retry_delay_seconds=10)
@@ -7,15 +8,16 @@ def setup() -> None:
     con = connect()
     con.execute("""
         CREATE TABLE IF NOT EXISTS raw_listens (
-            user_name        VARCHAR NOT NULL,
-            recording_msid   VARCHAR NOT NULL,
-            listened_at_unix BIGINT  NOT NULL,
+            user_name        VARCHAR   NOT NULL,
+            recording_msid   VARCHAR   NOT NULL,
+            listened_at_unix BIGINT    NOT NULL,
             artist_name      VARCHAR,
             track_name       VARCHAR,
             release_name     VARCHAR,
             artist_msid      VARCHAR,
             track_mbid       VARCHAR,
-            spotify_id       VARCHAR
+            spotify_id       VARCHAR,
+            ingested_at      TIMESTAMPTZ DEFAULT now()
         )
     """)
     con.close()
@@ -23,15 +25,6 @@ def setup() -> None:
 
 @task(name="Ingest Raw Data", retries=3, retry_delay_seconds=30)
 def ingest(path: str = DATA_PATH) -> int:
-    """
-    Load pre-validated JSONL into raw_listens. Idempotent:
-    - skips rows already present (matched on user + recording + timestamp)
-    - rejects rows with null or empty required keys, or invalid timestamps
-    - deduplicates within the source file itself
-    - trims whitespace from all string fields
-    - normalises empty optional strings to NULL
-    Returns the count of newly inserted rows.
-    """
     con = connect()
     before = con.execute("SELECT COUNT(*) FROM raw_listens").fetchone()[0]
 

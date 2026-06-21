@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-specific generated artifacts
+data/listens.db
+data/large_sample.jsonl
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml

@@ -1,6 +1,5 @@
 """
-Generates a large JSONL dataset for pipeline scale and robustness testing.
-
+Generates a larger JSONL dataset for pipeline scale and robustness testing.
 Produces four categories of records, shuffled together:
   - Valid records    : well-formed listens matching the real schema
   - Duplicates       : exact copies of valid records (pipeline must skip these)
@@ -9,8 +8,8 @@ Produces four categories of records, shuffled together:
 """
 
 import json
-import uuid
 import random
+import uuid
 from pathlib import Path
 
 NUM_VALID      = 100_000
