@@ -61,7 +61,7 @@ make run   # equivalent to docker compose up --build
 
 Open [localhost:4200](http://localhost:4200) once the server is healthy (~15 seconds). The UI shows each pipeline stage (Validate JSONL, Ingest Raw Data, dbt Transform & Test) with timing, logs, and retry state.
 
-![Prefect UI](assets/prefect.png)
+![Prefect UI](prefect.png)
 
 **6. Run locally (without Docker)**
 ```bash

@@ -1,7 +1,7 @@
 # Scalable Capital Challenge 2026
 
 ## Installation
-Instructions on installation can be found in SETUP.MD; This section involves an explination of design decisions and some differences between this simple test program and a productionalized setup.
+Instructions on installation can be found in [SETUP.md](SETUP.md). This section covers design decisions and differences between this pipeline and a fully productionised setup.
 
 ## File Validation
 The first step of this pipeline is ingesting our jsonl file with records. We do this by splititng the read into different process pools and validating multiple lines simultanously, until we have a filtered outfile in terms of format (though not in terms of the actual data its meant to represent). This should be done here as the functionality of duckdb's schema inference can be unexpected with broken jsonls.
