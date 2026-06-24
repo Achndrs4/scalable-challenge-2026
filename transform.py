@@ -9,5 +9,7 @@ from prefect import task
 def dbt_run(path: str) -> None:
     dbt = shutil.which("dbt") or ".venv/bin/dbt"
     flags = ["--project-dir", "dbt", "--profiles-dir", "dbt", "--vars", json.dumps({"data_path": path})]
+    # creates relevant tables/views in DBT
     subprocess.run([dbt, "run",  *flags], check=True)
+    # checks that the data is valid
     subprocess.run([dbt, "test", *flags], check=True)

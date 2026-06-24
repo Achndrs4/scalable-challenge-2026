@@ -4,13 +4,12 @@
 Instructions on installation can be found in [SETUP.md](SETUP.md). This section covers design decisions and differences between this pipeline and a fully productionised setup.
 
 ## File Validation
-The first step of this pipeline is ingesting our jsonl file with records. We do this by splititng the read into different process pools and validating multiple lines simultanously, until we have a filtered outfile in terms of format (though not in terms of the actual data its meant to represent). This should be done here as the functionality of duckdb's schema inference can be unexpected with broken jsonls.
+The first step of this pipeline is ingesting our jsonl file with records. We do this by splitting the read into different process pools and validating multiple lines simultanously, until we have a filtered outfile in terms of format (though not in terms of the actual data its meant to represent). This should be done here, and not by DBT, because the "cleanup" here does not involve business logic - simply validation that the file can be parsed, and if not, at least partially parsed. We also add a batch timestamp so that if newer data comes in we overwrite.
 
-## Ingestion into DB
-Now, we take this cleaned file and run some checks on each row of the cleaned file. THis includes trimming whitespace, normalizing empty strings, filtering duplicates in the ingestion file as well as filtering duplicates which already exist in the database. This makes our pipeline idempotent.
+In an actual AWS setup, we probably would have an S3 Bucket wired with something like SQS, with notifications to a new service on write that can either process small files (so, something like Lambda alone would be enough) - or for larger files (something like Spark) that can coorfinate I/O operations across several machines. The validated files should also live on S3, expecially in services that require regulatory oversight. This would then kick off the next part of the pipeline, ingestion.
 
-## Business Logic With DBT
-While the previous step gave us a valid raw database with all of the "transactions" we need, we cannot and should not be expected to query this table with complex business queries and it will result in backpressure for the ingestion pipeline. Therefore, we create a materialized table, which currently is ordered by listen date and user name to anticipate business use cases and optimize by having sequential memory blocks in the DB.
+## DB Ingestion
+While the previous step gave us a valid raw file with all of the "transactions" we need, we now need to apply some filtering and splitting for analysis. Our staging table filters for meaningless requests (like without a user_name) and de-duplicates our rows. The unique key here, user_name, recording_msid, and listened_at are using an upsert strategy - so if a file comes in with bad values somehow (for example, an upstream service which drops off the S3 file messed up all artist titles with an umlaut), we can re-run it, and fix it.
 
-## Data Tests
-To ensure that changes in our model don't break the expected downstream, we have defined some dbt tests that include null checks, as well as singular sql tests that check, for example, that we don't have duplicates and also that dbt itself doesn't drop anything between listens and raw_listens, for example.
+## Business Logic / Semantic Layer
+Now, with this table, we can create a table that's dedicated for business queries. Having it on a seperate table guarentees the I/O does not overlap with either of the above two flows.

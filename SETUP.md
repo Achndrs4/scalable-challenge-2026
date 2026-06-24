@@ -48,7 +48,7 @@ The two services are:
 | Service | Role |
 |---|---|
 | `prefect-server` | Prefect UI and API at [localhost:4200](http://localhost:4200) |
-| `data-intake` | Runs the full pipeline (validate → ingest → dbt) |
+| `data-intake` | Runs the full pipeline (validate → dbt run → dbt test) |
 
 The pipeline container waits for the Prefect server health check before starting. Once complete, the `listens` table is available inside the `db` Docker volume.
 
@@ -59,7 +59,7 @@ make run   # equivalent to docker compose up --build
 
 **5. View the Prefect UI (optional)**
 
-Open [localhost:4200](http://localhost:4200) once the server is healthy (~15 seconds). The UI shows each pipeline stage (Validate JSONL, Ingest Raw Data, dbt Transform & Test) with timing, logs, and retry state.
+Open [localhost:4200](http://localhost:4200) once the server is healthy (~15 seconds). The UI shows each pipeline stage (Validate JSONL, dbt Transform & Test) with timing, logs, and retry state.
 
 ![Prefect UI](prefect.png)
 
@@ -80,5 +80,7 @@ make queries    # run the analysis queries
 | `make install` | Install Python dependencies locally |
 | `make pipeline` | Run ingestion pipeline locally |
 | `make queries` | Run analysis queries locally |
+| `make dbt DATA_PATH=data/sample.jsonl` | Run dbt models and tests standalone |
+| `make test-large` | Generate 100k-record dataset and run the full pipeline against it |
 | `make generate` | Generate 100k-record test dataset |
 | `make clean` | Remove `listens.db` and generated JSONL |

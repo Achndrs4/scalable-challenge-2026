@@ -10,6 +10,7 @@ SELECT
     track_metadata.additional_info.artist_msid  AS artist_msid,
     track_metadata.additional_info.track_mbid   AS track_mbid,
     track_metadata.additional_info.spotify_id   AS spotify_id,
+    -- the only new field we add for tracking purposes
     epoch(now())::BIGINT                        AS batch_timestamp
 FROM read_json(
     '{{ var("data_path") }}',

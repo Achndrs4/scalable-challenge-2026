@@ -2,17 +2,7 @@ version: 2
 
 models:
   - name: raw_listens
-    description: "Raw dump from the validated JSONL file. Full refresh on every run."
-    columns:
-      - name: user_name
-        tests:
-          - not_null
-      - name: recording_msid
-        tests:
-          - not_null
-      - name: listened_at_unix
-        tests:
-          - not_null
+    description: "Raw dump from the validated JSONL file. Full refresh on every run. Nulls and duplicates are expected — filtered and deduplicated in stg_listens."
 
   - name: stg_listens
     description: "Cleaned and deduplicated layer over raw_listens. Incremental — unique_key prevents re-ingestion."
