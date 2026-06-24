@@ -8,4 +8,3 @@ SELECT
     release_name,
     spotify_id
 FROM {{ ref('stg_listens') }}
-ORDER BY listen_date, user_name

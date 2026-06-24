@@ -21,10 +21,6 @@ generate:
 test:
 	.venv/bin/pytest tests/ -v
 
-test-large:
-	.venv/bin/python data/generate.py
-	DATA_PATH=data/large_sample.jsonl .venv/bin/python pipeline.py
-
 lint:
 	.venv/bin/ruff check .
 
@@ -34,7 +30,7 @@ dbt:
 
 clean:
 	-docker compose down
-	rm -rf data/large_sample.jsonl dbt/target/ dbt/dbt_packages/ dbt/logs/ .pytest_cache/
+	rm -rf dbt/target/ dbt/dbt_packages/ dbt/logs/ .pytest_cache/
 
 reset: clean
 	rm -f data/listens.db

@@ -13,21 +13,6 @@ git clone <repo-url>
 cd scalable-challenge-2026
 ```
 
-**2. (Optional) Generate a large test dataset**
-
-We already have the original dataset provided, but in the case that we would want more, I wrote`data/generate.py` produces a 100k-record JSONL file with valid records, duplicates, and intentionally invalid records (null keys, bad timestamps) to verify the pipeline's idempotency and error handling at scale:
-
-```bash
-python data/generate.py
-# outputs data/large_sample.jsonl
-# 100,000 valid | 2,000 duplicates | 500 invalid
-```
-
-To run the pipeline against it instead of the real dataset:
-```bash
-DATA_PATH=data/large_sample.jsonl python pipeline.py
-```
-
 **3. Run with Docker Compose (recommended)**
 
 Docker Compose starts two services — a Prefect orchestration server for visually viewing results and the data pipeline.
@@ -80,7 +65,5 @@ make queries    # run the analysis queries
 | `make install` | Install Python dependencies locally |
 | `make pipeline` | Run ingestion pipeline locally |
 | `make queries` | Run analysis queries locally |
-| `make dbt DATA_PATH=data/sample.jsonl` | Run dbt models and tests standalone |
-| `make test-large` | Generate 100k-record dataset and run the full pipeline against it |
-| `make generate` | Generate 100k-record test dataset |
+| `make dbt DATA_PATH=data/dataset.jsonl` | Run dbt models and tests standalone |
 | `make clean` | Remove `listens.db` and generated JSONL |
