@@ -1,14 +1,34 @@
 version: 2
 
-sources:
-  - name: raw
-    schema: main
-    tables:
-      - name: raw_listens
-
 models:
+  - name: raw_listens
+    description: "Raw dump from the validated JSONL file. Full refresh on every run."
+    columns:
+      - name: user_name
+        tests:
+          - not_null
+      - name: recording_msid
+        tests:
+          - not_null
+      - name: listened_at_unix
+        tests:
+          - not_null
+
+  - name: stg_listens
+    description: "Cleaned and deduplicated layer over raw_listens. Incremental — unique_key prevents re-ingestion."
+    columns:
+      - name: user_name
+        tests:
+          - not_null
+      - name: recording_msid
+        tests:
+          - not_null
+      - name: listened_at_unix
+        tests:
+          - not_null
+
   - name: listens
-    description: "Semantic layer over raw_listens with cleaned fields and timestamps."
+    description: "Semantic layer over stg_listens with human-readable timestamps and business defaults."
     columns:
       - name: user_name
         tests:

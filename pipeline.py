@@ -3,21 +3,18 @@ import os
 from prefect import flow
 
 from db import DATA_PATH
-from ingest import ingest, setup
 from transform import dbt_run
 from validate import validate
 
 
 @flow(name="Listens Pipeline", log_prints=True)
 def run(path: str = DATA_PATH) -> None:
-    setup()
     clean_path = validate(path)
     try:
-        inserted = ingest(clean_path)
-        dbt_run()
+        dbt_run(clean_path)
     finally:
         os.unlink(clean_path)
-    print(f"Pipeline complete: {inserted} new records ingested.")
+    print("Pipeline complete.")
 
 
 if __name__ == "__main__":

@@ -7,5 +7,5 @@ SELECT
     COALESCE(track_name,  'Unknown')             AS track_name,
     release_name,
     spotify_id
-FROM {{ source('raw', 'raw_listens') }}
+FROM {{ ref('stg_listens') }}
 ORDER BY listen_date, user_name

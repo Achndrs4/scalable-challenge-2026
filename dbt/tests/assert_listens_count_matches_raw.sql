@@ -1,4 +1,4 @@
--- Fails if listens has fewer rows than raw_listens (rows silently dropped during transform).
+-- Fails if listens has fewer rows than stg_listens (rows silently dropped during semantic transform).
 SELECT 1
 WHERE (SELECT COUNT(*) FROM {{ ref('listens') }})
-    < (SELECT COUNT(*) FROM {{ source('raw', 'raw_listens') }})
+    < (SELECT COUNT(*) FROM {{ ref('stg_listens') }})
