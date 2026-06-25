@@ -1,7 +1,10 @@
-.PHONY: run venv install pipeline queries generate test test-large lint dbt clean reset
+.PHONY: run build venv install pipeline queries generate test test-large lint dbt clean reset
 
 run:
-	docker compose up --build
+	docker compose up
+
+build:
+	docker compose build
 
 venv:
 	uv venv .venv

@@ -26,8 +26,10 @@ For the convenience of the tester, a subset of the full data has been provided.
 The following command starts two docker containers — a Prefect orchestration server for visually viewing results and the data pipeline.
 
 ```bash
-    `make run`         
+make build   # build the image (first time, or after changing dependencies)
+make run     # start the stack using the cached image
 ```
+
 The two services are:
 
 | Service | Role |
@@ -38,16 +40,11 @@ The two services are:
 The pipeline container waits for the Prefect server health check before starting. Once complete, the `listens` table is available inside the `db` Docker volume.
 
 **4. Restart Service**
-If you want to restart the service, simply run: 
+If you want to restart the service, simply run:
 ```bash
-    `make clean`         
+make clean
 ```
-This removes temporary files, and pulls our docker containers down.
-
-**4. Run with Docker (via Make)**
-```bash
-make run   # equivalent to docker compose up --build
-```
+This removes temporary files and brings the Docker containers down.
 
 **5. View the Prefect UI (optional)**
 
@@ -69,7 +66,8 @@ make queries    # run the analysis queries
 
 | Command | Description |
 |---|---|
-| `make run` | Start full stack with Docker (includes Prefect UI) |
+| `make build` | Build the Docker image |
+| `make run` | Start full stack with Docker using the cached image (includes Prefect UI) |
 | `make install` | Install Python dependencies locally |
 | `make pipeline` | Run ingestion pipeline locally |
 | `make queries` | Run analysis queries locally |
