@@ -7,7 +7,7 @@ venv:
 	uv venv .venv
 
 install:
-	uv pip install -r requirements.txt
+	uv sync
 
 pipeline:
 	.venv/bin/python pipeline.py

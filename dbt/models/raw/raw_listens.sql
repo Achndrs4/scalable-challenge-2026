@@ -1,4 +1,4 @@
-{{ config(materialized='incremental') }}
+{{ config(materialized='incremental', on_schema_change='sync_all_columns') }}
 
 SELECT
     user_name,

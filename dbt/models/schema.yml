@@ -2,38 +2,89 @@ version: 2
 
 models:
   - name: raw_listens
-    description: "Raw dump from the validated JSONL file. Full refresh on every run. Nulls and duplicates are expected — filtered and deduplicated in stg_listens."
-
-  - name: stg_listens
-    description: "Cleaned and deduplicated layer over raw_listens. Incremental — unique_key prevents re-ingestion."
+    description: "Append-only log of every batch ever ingested. Nulls and duplicates are expected — filtered and deduplicated in stg_listens."
     columns:
       - name: user_name
+        description: "ListenBrainz username. May be null for malformed records."
+      - name: recording_msid
+        description: "ListenBrainz session ID for the recording. Generated per listen event."
+      - name: listened_at_unix
+        description: "Unix timestamp (seconds) of when the listen occurred."
+      - name: artist_name
+        description: "Artist name as submitted by the user. May be null."
+      - name: track_name
+        description: "Track name as submitted by the user. May be null."
+      - name: release_name
+        description: "Album or release name. Optional — may be null."
+      - name: artist_msid
+        description: "ListenBrainz session ID for the artist."
+      - name: track_mbid
+        description: "MusicBrainz canonical ID for the track. Null if not matched."
+      - name: spotify_id
+        description: "Spotify URI for the track. Null if not available."
+      - name: batch_timestamp
+        description: "Microseconds since epoch at the time this dbt run executed. Used to identify and order batches."
+      - name: batch_id
+        description: "dbt invocation UUID. Uniquely identifies the dbt run that produced this row."
+
+  - name: stg_listens
+    description: "Cleaned and deduplicated layer over raw_listens. Incremental — new batches are merged via unique_key, latest batch wins."
+    columns:
+      - name: user_name
+        description: "ListenBrainz username. Null and blank rows are filtered out."
         tests:
           - not_null
       - name: recording_msid
+        description: "ListenBrainz session ID for the recording. Null and blank rows are filtered out."
         tests:
           - not_null
       - name: listened_at_unix
-        tests:
-          - not_null
-
-  - name: listens
-    description: "Semantic layer over stg_listens with human-readable timestamps and business defaults."
-    columns:
-      - name: user_name
-        tests:
-          - not_null
-      - name: recording_msid
-        tests:
-          - not_null
-      - name: listened_at
+        description: "Unix timestamp (seconds) of when the listen occurred. Zero and negative values are filtered out."
         tests:
           - not_null
       - name: artist_name
-        description: "NULL values from source are replaced with 'Unknown'."
+        description: "Artist name, whitespace-trimmed. May be null."
+      - name: track_name
+        description: "Track name, whitespace-trimmed. May be null."
+      - name: release_name
+        description: "Album or release name. May be null."
+      - name: artist_msid
+        description: "ListenBrainz session ID for the artist."
+      - name: track_mbid
+        description: "MusicBrainz canonical ID for the track. Null if not matched."
+      - name: spotify_id
+        description: "Spotify URI for the track. Null if not available."
+      - name: batch_timestamp
+        description: "Microseconds since epoch of the ingestion run that last wrote this row."
+      - name: batch_id
+        description: "dbt invocation UUID of the run that last wrote this row."
+
+  - name: listens
+    description: "Semantic layer over stg_listens. Human-readable timestamps, business defaults applied, internal pipeline columns removed."
+    columns:
+      - name: user_name
+        description: "ListenBrainz username."
+        tests:
+          - not_null
+      - name: recording_msid
+        description: "ListenBrainz session ID for the recording."
+        tests:
+          - not_null
+      - name: listened_at
+        description: "Timestamp of the listen, converted from Unix epoch."
+        tests:
+          - not_null
+      - name: listen_date
+        description: "Date portion of listened_at, for day-level aggregations."
+      - name: artist_name
+        description: "Artist name. Null values from source are replaced with 'Unknown'."
         tests:
           - not_null
       - name: track_name
-        description: "NULL values from source are replaced with 'Unknown'."
+        description: "Track name. Null values from source are replaced with 'Unknown'."
         tests:
           - not_null
+      - name: release_name
+        description: "Album or release name. May be null."
+      - name: spotify_id
+        description: "Spotify URI for the track. May be null."

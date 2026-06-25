@@ -1,7 +1,8 @@
 {{ config(
     materialized='incremental',
     unique_key=['user_name', 'recording_msid', 'listened_at_unix'],
-    incremental_strategy='delete+insert'
+    incremental_strategy='delete+insert',
+    on_schema_change='sync_all_columns'
 ) }}
 
 WITH filtered AS (
