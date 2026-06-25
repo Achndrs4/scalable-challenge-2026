@@ -29,13 +29,22 @@ def first_song_per_user(con: duckdb.DuckDBPyConnection) -> None:
     # Task 2a-iii: First song ever listened to, per user.
     print("\n── First song per user ──")
     con.sql("""
-        SELECT DISTINCT ON (user_name)
-            user_name,
-            track_name,
-            artist_name,
-            listened_at
-        FROM listens
-        ORDER BY user_name, listened_at ASC
+        WITH ranked AS (
+            SELECT
+                user_name,
+                track_name,
+                artist_name,
+                listened_at,
+                ROW_NUMBER() OVER (
+                    PARTITION BY user_name
+                    ORDER BY listened_at ASC
+                ) AS rn
+            FROM listens
+        )
+        SELECT user_name, track_name, artist_name, listened_at
+        FROM ranked
+        WHERE rn = 1
+        ORDER BY user_name
     """).show()
 
 
