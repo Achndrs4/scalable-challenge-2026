@@ -7,7 +7,7 @@ For insights relating to structure and architecture, please read [Challenge.md](
 
 ## Requirements
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
-- Python 3.11 ([pyenv](https://github.com/pyenv/pyenv) recommended)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) — install with `brew install uv` or `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 ## Setup
 
@@ -17,9 +17,12 @@ git clone <repo-url>
 cd scalable-challenge-2026
 ```
 
-**2. Add datafile and point to the data**
-This pipeline requires a variable pointing to the listens jsonl dump to be in a .env file like the example [.env.example](.env.example) file.
-For the convenience of the tester, a subset of the full data has been provided.
+**2. Create your .env file**
+Copy the example and verify the data path points to the included sample file:
+```bash
+cp .env.example .env
+```
+The `.env.example` is pre-configured to use `data/dataset-sample.jsonl`, which is included in the repo.
 
 **3. Run with Docker Compose (recommended)**
 
@@ -53,13 +56,17 @@ Open [localhost:4200](http://localhost:4200) once the server is healthy (~15 sec
 ![Prefect UI](img/prefect.png)
 
 **6. Run locally (without Docker)**
-Make sure you have an .env file locally - a sample .env has been included which includes the path to the file.
+Make sure you have completed step 2 (`.env` file). If you don't have `uv` installed yet:
 ```bash
-pyenv install 3.11.9
-pyenv local 3.11.9
-make install
-make pipeline   # run the ingestion pipeline
-make queries    # run the analysis queries
+brew install uv          # macOS
+# or: curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+Then install dependencies and run:
+```bash
+uv venv .venv --python 3.11
+uv sync
+make pipeline  
+make queries    
 ```
 
 ## All make commands
@@ -68,8 +75,9 @@ make queries    # run the analysis queries
 |---|---|
 | `make build` | Build the Docker image |
 | `make run` | Start full stack with Docker using the cached image (includes Prefect UI) |
-| `make install` | Install Python dependencies locally |
+| `make install` | Install Python dependencies locally via uv |
 | `make pipeline` | Run ingestion pipeline locally |
 | `make queries` | Run analysis queries locally |
 | `make dbt DATA_PATH=data/dataset-sample.jsonl` | Run dbt models and tests standalone |
-| `make clean` | Remove `listens.db` and generated JSONL |
+| `make clean` | Remove temporary files and bring Docker containers down |
+| `make reset` | Full reset — also deletes the local database |
