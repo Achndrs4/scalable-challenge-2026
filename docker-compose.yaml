@@ -14,7 +14,6 @@ services:
   data-intake:
     build: .
     command: python pipeline.py
-    env_file: .env
     environment:
       DB_PATH: /app/db/listens.db
       DATA_PATH: /app/data/dataset-sample.jsonl

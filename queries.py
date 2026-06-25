@@ -76,8 +76,6 @@ def top_3_days_per_user(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def daily_active_users(con: duckdb.DuckDBPyConnection) -> None:
-   # Task 2c: Daily active users with 7-day rolling window.
-    
     print("\n── Daily active users (7-day rolling window) ──")
     con.sql("""
         WITH all_days AS (

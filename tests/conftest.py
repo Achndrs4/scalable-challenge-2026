@@ -1,6 +1,5 @@
 import json
 
-import duckdb
 import pytest
 
 VALID_RECORDS = [
@@ -38,35 +37,6 @@ VALID_RECORDS = [
         },
     },
 ]
-
-
-@pytest.fixture
-def db():
-    # raw_listens text fixture.
-    con = duckdb.connect(":memory:")
-    con.execute("""
-        CREATE TABLE raw_listens (
-            user_name        VARCHAR NOT NULL,
-            recording_msid   VARCHAR NOT NULL,
-            listened_at_unix BIGINT  NOT NULL,
-            artist_name      VARCHAR,
-            track_name       VARCHAR,
-            release_name     VARCHAR,
-            artist_msid      VARCHAR,
-            track_mbid       VARCHAR,
-            spotify_id       VARCHAR
-        )
-    """)
-    yield con
-    con.close()
-
-
-@pytest.fixture
-def valid_jsonl(tmp_path):
-    #Write VALID_RECORDS to a temp JSONL file and return its path.
-    f = tmp_path / "test.jsonl"
-    f.write_text("\n".join(json.dumps(r) for r in VALID_RECORDS))
-    return str(f)
 
 
 @pytest.fixture

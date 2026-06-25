@@ -13,5 +13,4 @@ ignore = [
 ]
 
 [lint.per-file-ignores]
-"data/generate.py" = ["B"]  # generator script uses intentional broad patterns
 "tests/*" = ["B011"]        # assert False is fine in tests

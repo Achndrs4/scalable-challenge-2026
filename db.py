@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_PATH = os.getenv("DB_PATH", "listens.db")
+DB_PATH = os.getenv("DB_PATH", "data/listens.db")
 DATA_PATH = os.getenv("DATA_PATH", "data/dataset-sample.jsonl")
 
 
