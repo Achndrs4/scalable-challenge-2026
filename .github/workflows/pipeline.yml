@@ -1,0 +1,24 @@
+name: Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          uv venv --clear
+          uv pip install -r requirements.txt
+      - name: Run tests
+        run: uv run pytest tests/ -v
+      - name: Run pipeline against sample file
+        env:
+          DATA_PATH: data/dataset-sample.jsonl
+          DB_PATH: data/listens.db
+          PREFECT_API_URL: ""
+        run: uv run python pipeline.py
