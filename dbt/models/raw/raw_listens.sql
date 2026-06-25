@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='incremental') }}
 
 SELECT
     user_name,
@@ -10,8 +10,8 @@ SELECT
     track_metadata.additional_info.artist_msid  AS artist_msid,
     track_metadata.additional_info.track_mbid   AS track_mbid,
     track_metadata.additional_info.spotify_id   AS spotify_id,
-    -- the only new field we add for tracking purposes
-    epoch(now())::BIGINT                        AS batch_timestamp
+    epoch_us(now())::BIGINT                       AS batch_timestamp,
+    '{{ invocation_id }}'                         AS batch_id
 FROM read_json(
     '{{ var("data_path") }}',
     columns = {
