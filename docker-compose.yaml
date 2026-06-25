@@ -17,7 +17,7 @@ services:
     env_file: .env
     environment:
       DB_PATH: /app/db/listens.db
-      DATA_PATH: /app/data/dataset.jsonl
+      DATA_PATH: /app/data/dataset-sample.jsonl
       PREFECT_API_URL: http://prefect-server:4200/api
     volumes:
       - ./data:/app/data

@@ -1,15 +1,74 @@
-# Scalable Capital Challenge 2026
+# Data Pipeline Installation Instructions
 
-## Installation
-Instructions on installation can be found in [SETUP.md](SETUP.md). This section covers design decisions and differences between this pipeline and a fully productionised setup.
+## Design Choices
+For challenge related insights, and architectural decisions, please check [Challenge.md](Challenge.md)
+## Requirements
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
+- Python 3.11 ([pyenv](https://github.com/pyenv/pyenv) recommended)
 
-## File Validation
-The first step of this pipeline is ingesting our jsonl file with records. We do this by splitting the read into different process pools and validating multiple lines simultanously, until we have a filtered outfile in terms of format (though not in terms of the actual data its meant to represent). This should be done here, and not by DBT, because the "cleanup" here does not involve business logic - simply validation that the file can be parsed, and if not, at least partially parsed. We also add a batch timestamp so that if newer data comes in we overwrite.
+## Setup
 
-In an actual AWS setup, we probably would have an S3 Bucket wired with something like SQS, with notifications to a new service on write that can either process small files (so, something like Lambda alone would be enough) - or for larger files (something like Spark) that can coorfinate I/O operations across several machines. The validated files should also live on S3, expecially in services that require regulatory oversight. This would then kick off the next part of the pipeline, ingestion.
+**1. Clone the repo and enter the directory**
+```bash
+git clone <repo-url>
+cd scalable-challenge-2026
+```
 
-## DB Ingestion
-While the previous step gave us a valid raw file with all of the "transactions" we need, we now need to apply some filtering and splitting for analysis. Our staging table filters for meaningless requests (like without a user_name) and de-duplicates our rows. The unique key here, user_name, recording_msid, and listened_at are using an upsert strategy - so if a file comes in with bad values somehow (for example, an upstream service which drops off the S3 file messed up all artist titles with an umlaut), we can re-run it, and fix it.
+**2. Add datafile and point to the data**
+This pipeline requires a variable pointing to the listens jsonl dump to be in a .env file like the example [.env.example](.env.example) file.
+For the convenience of the tester, a subset of the full data has been provided.
 
-## Business Logic / Semantic Layer
-Now, with this table, we can create a table that's dedicated for business queries. Having it on a seperate table guarentees the I/O does not overlap with either of the above two flows.
+**3. Run with Docker Compose (recommended)**
+
+The following command starts two docker containers — a Prefect orchestration server for visually viewing results and the data pipeline.
+
+```bash
+    `make run`         
+```
+The two services are:
+
+| Service | Role |
+|---|---|
+| `prefect-server` | Prefect UI to view pipeline status, runs, and restarts [localhost:4200](http://localhost:4200) |
+| `data-intake` | Runs the full pipeline (validate → dbt run → dbt test) |
+
+The pipeline container waits for the Prefect server health check before starting. Once complete, the `listens` table is available inside the `db` Docker volume.
+
+**4. Restart Service**
+If you want to restart the service, simply run: 
+```bash
+    `make clean`         
+```
+This removes temporary files, and pulls our docker containers down.
+
+**4. Run with Docker (via Make)**
+```bash
+make run   # equivalent to docker compose up --build
+```
+
+**5. View the Prefect UI (optional)**
+
+Open [localhost:4200](http://localhost:4200) once the server is healthy (~15 seconds). The UI shows each pipeline stage (Validate JSONL, dbt Transform & Test) with timing, logs, and retry state.
+
+![Prefect UI](prefect.png)
+
+**6. Run locally (without Docker)**
+Make sure you have an .env file locally - a sample .env has been included which includes the path to the file.
+```bash
+pyenv install 3.11.9
+pyenv local 3.11.9
+make install
+make pipeline   # run the ingestion pipeline
+make queries    # run the analysis queries
+```
+
+## All make commands
+
+| Command | Description |
+|---|---|
+| `make run` | Start full stack with Docker (includes Prefect UI) |
+| `make install` | Install Python dependencies locally |
+| `make pipeline` | Run ingestion pipeline locally |
+| `make queries` | Run analysis queries locally |
+| `make dbt DATA_PATH=data/dataset-sample.jsonl` | Run dbt models and tests standalone |
+| `make clean` | Remove `listens.db` and generated JSONL |
