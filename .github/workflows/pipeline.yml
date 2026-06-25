@@ -21,4 +21,6 @@ jobs:
           DATA_PATH: data/dataset-sample.jsonl
           DB_PATH: data/listens.db
           PREFECT_API_URL: ""
+          PREFECT_SERVER_TELEMETRY_ENABLED: "false"
+          PREFECT_LOGGING_TO_API_ENABLED: "false"
         run: uv run python pipeline.py
