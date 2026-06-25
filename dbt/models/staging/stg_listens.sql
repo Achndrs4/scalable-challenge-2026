@@ -1,6 +1,7 @@
 {{ config(
     materialized='incremental',
-    unique_key=['user_name', 'recording_msid', 'listened_at_unix']
+    unique_key=['user_name', 'recording_msid', 'listened_at_unix'],
+    incremental_strategy='delete+insert'
 ) }}
 
 WITH filtered AS (

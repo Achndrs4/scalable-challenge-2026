@@ -1,4 +1,6 @@
 # Data Pipeline Installation Instructions
+![Data Architecture](img/architecture.png)
+
 
 ## Design Choices
 For insights relating to structure and architecture, please read [Challenge.md](Challenge.md)
@@ -51,7 +53,7 @@ make run   # equivalent to docker compose up --build
 
 Open [localhost:4200](http://localhost:4200) once the server is healthy (~15 seconds). The UI shows each pipeline stage (Validate JSONL, dbt Transform & Test) with timing, logs, and retry state.
 
-![Prefect UI](prefect.png)
+![Prefect UI](img/prefect.png)
 
 **6. Run locally (without Docker)**
 Make sure you have an .env file locally - a sample .env has been included which includes the path to the file.

@@ -4,7 +4,7 @@ from db import connect
 
 
 def top_10_users(con: duckdb.DuckDBPyConnection) -> None:
-    """Task 2a-i: Top 10 users by number of listens."""
+    # Task 2a-i: Top 10 users by number of listens.
     print("\n── Top 10 users by listens ──")
     con.sql("""
         SELECT user_name, COUNT(*) AS listens
@@ -16,7 +16,7 @@ def top_10_users(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def users_on_march_1_2019(con: duckdb.DuckDBPyConnection) -> None:
-    """Task 2a-ii: Number of users who listened on 2019-03-01."""
+    # Task 2a-ii: Number of users who listened on 2019-03-01.
     print("\n── Users who listened on 2019-03-01 ──")
     con.sql("""
         SELECT COUNT(DISTINCT user_name) AS user_count
@@ -26,7 +26,7 @@ def users_on_march_1_2019(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def first_song_per_user(con: duckdb.DuckDBPyConnection) -> None:
-    """Task 2a-iii: First song ever listened to, per user."""
+    # Task 2a-iii: First song ever listened to, per user.
     print("\n── First song per user ──")
     con.sql("""
         SELECT DISTINCT ON (user_name)
@@ -40,7 +40,7 @@ def first_song_per_user(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def top_3_days_per_user(con: duckdb.DuckDBPyConnection) -> None:
-    """Task 2b: Top 3 days with most listens per user."""
+    # Task 2b: Top 3 days with most listens per user.
     print("\n── Top 3 listening days per user ──")
     con.sql("""
         WITH daily AS (
@@ -67,10 +67,8 @@ def top_3_days_per_user(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def daily_active_users(con: duckdb.DuckDBPyConnection) -> None:
-    """
-    Task 2c: Daily active users with 7-day rolling window.
-    A user is active on day X if they listened in [X-6 days, X].
-    """
+   # Task 2c: Daily active users with 7-day rolling window.
+    
     print("\n── Daily active users (7-day rolling window) ──")
     con.sql("""
         WITH all_days AS (

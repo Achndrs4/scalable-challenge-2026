@@ -42,7 +42,7 @@ VALID_RECORDS = [
 
 @pytest.fixture
 def db():
-    """Blank in-memory DuckDB with raw_listens schema, torn down after each test."""
+    # raw_listens text fixture.
     con = duckdb.connect(":memory:")
     con.execute("""
         CREATE TABLE raw_listens (
@@ -63,7 +63,7 @@ def db():
 
 @pytest.fixture
 def valid_jsonl(tmp_path):
-    """Write VALID_RECORDS to a temp JSONL file and return its path."""
+    #Write VALID_RECORDS to a temp JSONL file and return its path.
     f = tmp_path / "test.jsonl"
     f.write_text("\n".join(json.dumps(r) for r in VALID_RECORDS))
     return str(f)
@@ -71,7 +71,7 @@ def valid_jsonl(tmp_path):
 
 @pytest.fixture
 def mixed_jsonl(tmp_path):
-    """JSONL file mixing valid records with malformed lines."""
+    #JSONL file mixing valid records with malformed lines.
     lines = [
         json.dumps(VALID_RECORDS[0]),
         "not json at all",
