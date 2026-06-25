@@ -4,10 +4,10 @@ run:
 	docker compose up --build
 
 venv:
-	python -m venv .venv
+	uv venv .venv
 
 install:
-	.venv/bin/pip install -r requirements.txt
+	uv pip install -r requirements.txt
 
 pipeline:
 	.venv/bin/python pipeline.py

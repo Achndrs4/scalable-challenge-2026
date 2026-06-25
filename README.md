@@ -1,7 +1,8 @@
 # Data Pipeline Installation Instructions
 
 ## Design Choices
-For challenge related insights, and architectural decisions, please check [Challenge.md](Challenge.md)
+For insights relating to structure and architecture, please read [Challenge.md](Challenge.md)
+
 ## Requirements
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
 - Python 3.11 ([pyenv](https://github.com/pyenv/pyenv) recommended)
