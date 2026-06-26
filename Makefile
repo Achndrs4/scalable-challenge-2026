@@ -1,4 +1,6 @@
-.PHONY: run build venv install pipeline queries generate test test-large lint dbt clean reset
+DATA_PATH ?= data/dataset-sample.jsonl
+
+.PHONY: run build venv install pipeline queries test lint dbt clean reset
 
 run:
 	docker compose up
@@ -17,9 +19,6 @@ pipeline:
 
 queries:
 	.venv/bin/python queries.py
-
-generate:
-	.venv/bin/python data/generate.py
 
 test:
 	.venv/bin/pytest tests/ -v
