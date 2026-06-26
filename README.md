@@ -22,7 +22,7 @@ Copy the example and verify the data path points to the included sample file:
 ```bash
 cp .env.example .env
 ```
-The `.env.example` is pre-configured to use `data/dataset-sample.jsonl`, which is included in the repo.
+The `.env.example` is pre-configured to use `data/dataset-sample.jsonl`, which is a small subset of the full dataset, as large files cannot be uploaded to git.
 
 **3. Run with Docker Compose (recommended)**
 
@@ -42,20 +42,28 @@ The two services are:
 
 The pipeline container waits for the Prefect server health check before starting. Once complete, the `listens` table is available inside the `db` Docker volume.
 
-**4. Restart Service**
+
+**5.View Question Results**
+Now that the database pipeline has been run, you can simply check the output of:
+
+```bash
+make query
+```
+
+**6. Restart Service**
 If you want to restart the service, simply run:
 ```bash
 make clean
 ```
 This removes temporary files and brings the Docker containers down.
 
-**5. View the Prefect UI (optional)**
+**7. View the Prefect UI (optional)**
 
 Open [localhost:4200](http://localhost:4200) once the server is healthy (~15 seconds). The UI shows each pipeline stage (Validate JSONL, dbt Transform & Test) with timing, logs, and retry state.
 
 ![Prefect UI](img/prefect.png)
 
-**6. Run locally (without Docker)**
+**8. Run locally (without Docker)**
 Make sure you have completed step 2 (`.env` file). If you don't have `uv` installed yet:
 ```bash
 brew install uv          # macOS

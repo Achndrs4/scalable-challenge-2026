@@ -41,7 +41,7 @@ VALID_RECORDS = [
 
 @pytest.fixture
 def mixed_jsonl(tmp_path):
-    #JSONL file mixing valid records with malformed lines.
+    # JSONL file mixing valid records with malformed lines.
     lines = [
         json.dumps(VALID_RECORDS[0]),
         "not json at all",
